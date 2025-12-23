@@ -1,0 +1,147 @@
+{{ define "dashboard_page.html" }}
+{{ template "base.html" . }}
+{{ end }}
+
+{{ define "content" }}
+<div class="page-header">
+    <h1>📊 Дашборд</h1>
+    <p class="page-subtitle">Общая статистика и аналитика системы</p>
+</div>
+
+<!-- Основная статистика -->
+<div class="card">
+    <h2 style="margin-bottom: 1.5rem;">📈 Общая статистика</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+        <!-- Статистика автоматов -->
+
+        {{ template "machines_chart.html" . }}
+        {{template "operations_chart.html" .}}
+        {{ template "cash_chart.html" . }}
+        {{ template "toys_chart.html" . }}
+
+    </div>
+</div>
+
+<!-- Статистика складов -->
+<div class="card">
+    <h2 style="margin-bottom: 1.5rem;">🏭 Статистика складов</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-value">{{.TotalValue}}</div>
+            <div class="stat-label">Общая стоимость инвентаря</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-value">{{.LowStockCount}}</div>
+            <div class="stat-label">Позиций с низким запасом</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">❌</div>
+            <div class="stat-value">{{.OutOfStockCount}}</div>
+            <div class="stat-label">Отсутствующих позиций</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🏭</div>
+            <div class="stat-value">{{.TotalWarehouses}}</div>
+            <div class="stat-label">Активных складов</div>
+        </div>
+    </div>
+</div>
+
+<!-- Дополнительная статистика -->
+<div style="display: none; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+    <!-- Статистика по типам товаров -->
+    <div class="card">
+        <h3>📦 Распределение по типам</h3>
+        <div style="margin-top: 1rem;">
+            {{range .InventoryByType}}
+            <div
+                style="display: flex; justify-content: between; align-items: center; margin-bottom: 0.75rem; padding: 0.5rem; border-radius: 6px;">
+                <span style="font-weight: 500;">{{.TypeName}}</span>
+                <span style="font-weight: 600; color: var(--primary);">{{.Count}} ед.</span>
+            </div>
+            {{end}}
+        </div>
+    </div>
+
+    <!-- Быстрые действия -->
+    <div class="card">
+        <h3>⚡ Быстрые действия</h3>
+        <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <button class="btn btn-primary" hx-get="/warehouses/inventory-form" hx-target="#modal-body"
+                onclick="VendERP.showModal()">
+                📦 Добавить товар
+            </button>
+            <button class="btn btn-secondary" hx-get="/warehouses/form" hx-target="#modal-body"
+                onclick="VendERP.showModal()">
+                🏭 Добавить склад
+            </button>
+            <button class="btn btn-warning" hx-get="/operations/form" hx-target="#modal-body"
+                onclick="VendERP.showModal()">
+                📋 Новая операция
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Критические позиции -->
+{{if .LowStockItems}}
+<div class="card" style="margin-top: 1.5rem;">
+    <h3>🚨 Критические позиции</h3>
+    <div style="margin-top: 1rem;">
+        {{range .LowStockItems}}
+        <div
+            style="display: flex; justify-content: between; align-items: center; margin-bottom: 0.5rem; padding: 0.75rem; background: rgba(255, 193, 7, 0.1); border-left: 4px solid var(--warning); border-radius: 4px;">
+            <div>
+                <div style="font-weight: 500;">{{.ItemName}}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">{{.WarehouseName}}</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-weight: 600; color: var(--warning);">{{.Quantity}}/{{.MinStockLevel}}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">осталось</div>
+            </div>
+        </div>
+        {{end}}
+    </div>
+</div>
+{{end}}
+
+
+<!-- Добавьте временно в dashboard_page.html для тестирования -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Тестовая функция для проверки API
+    async function testCashApi() {
+        try {
+            console.log('Testing /api/charts/cash endpoint...');
+            const response = await fetch('/api/charts/cash');
+            console.log('Response status:', response.status);
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Cash chart data:', data);
+                return true;
+            } else {
+                console.error('API error:', response.status, response.statusText);
+                return false;
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            return false;
+        }
+    }
+    
+    // Запустить тест через 2 секунды после загрузки
+    setTimeout(() => {
+        testCashApi().then(success => {
+            console.log('Cash API test:', success ? 'SUCCESS' : 'FAILED');
+        });
+    }, 2000);
+});
+</script>
+{{ end }}

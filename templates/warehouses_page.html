@@ -1,0 +1,87 @@
+{{ define "warehouses_page.html" }}
+{{ template "base.html" . }}
+{{ end }}
+
+{{ define "content" }}
+<div class="page-header">
+    <h1>🏭 Склады</h1>
+    <div  class="action-btn" >
+        <button class="btn btn-primary" 
+                hx-get="/warehouses/form" 
+                hx-target="#modal-body"
+                onclick="VendERP.showModal()">
+            ➕ Добавить склад
+        </button>
+        <button class="btn btn-secondary" 
+                hx-get="/warehouses/inventory-form" 
+                hx-target="#modal-body"
+                onclick="VendERP.showModal()">
+            📦 Добавить товар
+        </button>
+    </div>
+</div>
+
+<!-- Фильтры и статистика -->
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div class="filter-drop" >
+            <select id="warehouse-filter" class="form-select" 
+                    onchange="filterInventory()">
+                <option value="">Все склады</option>
+                {{range .Warehouses}}
+                <option value="{{.ID}}">{{.Name}}</option>
+                {{end}}
+            </select>
+            
+            <select id="category-filter" class="form-select" 
+                    onchange="filterInventory()">
+                <option value="">Все категории</option>
+                <option value="vending_machine">Автоматы</option>
+                <option value="toy">Игрушки</option>
+                <option value="capsule">Капсулы</option>
+            </select>
+            
+            <select id="stock-filter" class="form-select" 
+                    onchange="filterInventory()">
+                <option value="">Все позиции</option>
+                <option value="low">Низкий запас</option>
+                <option value="out">Отсутствует</option>
+                <option value="normal">Нормальный запас</option>
+            </select>
+        </div>
+        
+        <div style="display: flex; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+            <span>📊 Всего: <strong>{{.TotalItems}}</strong> позиций</span>
+            <span>🏭 Складов: <strong>{{.TotalWarehouses}}</strong></span>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div id="warehouses-table">
+        {{ template "warehouses_list.html" . }}
+    </div>
+</div>
+
+<!-- Модальное окно для быстрых действий 
+<div id="action-modal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" onclick="VendERP.hideActionModal()">×</button>
+        <div id="action-modal-body"></div>
+    </div>
+</div>
+-->
+
+<script>
+function filterInventory() {
+    const warehouseId = document.getElementById('warehouse-filter').value;
+    const category = document.getElementById('category-filter').value;
+    const stock = document.getElementById('stock-filter').value;
+    
+    const url = `/warehouses/filter?warehouse_id=${warehouseId}&category=${category}&stock=${stock}`;
+    
+    htmx.ajax('GET', url, '#warehouses-table');
+}
+
+</script>
+{{ end }}
