@@ -15,17 +15,18 @@ type AuthHandler struct {
 }
 
 func NewAuthHandler(db *sql.DB, renderer *TemplateRenderer) *AuthHandler {
-    return &AuthHandler{db: db, renderer: renderer}
+    return &AuthHandler{
+        db:       db,
+        renderer: renderer,
+    }
 }
 
-// Session represents a user session
 type Session struct {
     ID        string
-    UserID    int64
+    UserID    string
     ExpiresAt time.Time
 }
 
-// AuthData represents authentication form data
 type AuthData struct {
     SignUp   bool
     Email    string
@@ -35,7 +36,6 @@ type AuthData struct {
     Active   string
 }
 
-// generateSessionID generates a random session ID
 func generateSessionID() (string, error) {
     bytes := make([]byte, 32)
     if _, err := rand.Read(bytes); err != nil {
@@ -63,14 +63,13 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
     email := r.FormValue("email")
     password := r.FormValue("password")
     
-    var userID int64
-    var hashedPassword, username string
-    var status int
+    var userID, hashedPassword, username, userRole string
+    var isActive bool
     
     err := h.db.QueryRow(`
-        SELECT id, username, password, status 
+        SELECT id, username, password, is_active, role 
         FROM users WHERE email = $1
-    `, email).Scan(&userID, &username, &hashedPassword, &status)
+    `, email).Scan(&userID, &username, &hashedPassword, &isActive, &userRole)
     
     if err != nil {
         data := AuthData{
@@ -84,8 +83,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    // Check if user is active
-    if status != 1 {
+    if !isActive {
         data := AuthData{
             SignUp: false,
             Email:  email,
@@ -97,7 +95,6 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    // Verify password using bcrypt
     err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
     if err != nil {
         data := AuthData{
@@ -111,7 +108,6 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    // Create session
     sessionID, err := generateSessionID()
     if err != nil {
         http.Error(w, "Ошибка создания сессии", http.StatusInternalServerError)
@@ -130,7 +126,6 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    // Set session cookie
     http.SetCookie(w, &http.Cookie{
         Name:     "session_id",
         Value:    sessionID,
@@ -140,7 +135,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
         Secure:   false,
     })
     
-    http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+    http.Redirect(w, r, "/locations", http.StatusSeeOther)
 }
 
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
@@ -164,7 +159,6 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
     password := r.FormValue("password")
     passwordConfirm := r.FormValue("password_confirm")
     
-    // Validate input
     if password != passwordConfirm {
         data := AuthData{
             SignUp:   true,
@@ -191,10 +185,11 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    // Check if user already exists
     var exists bool
-    h.db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE email = $1 OR username = $2)", 
-        email, username).Scan(&exists)
+    h.db.QueryRow(
+        "SELECT EXISTS(SELECT 1 FROM users WHERE email = $1 OR username = $2)", 
+        email, username,
+    ).Scan(&exists)
     
     if exists {
         data := AuthData{
@@ -209,7 +204,6 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    // Hash password using bcrypt
     hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
     if err != nil {
         data := AuthData{
@@ -224,11 +218,10 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
         return
     }
     
-    // Create user
     _, err = h.db.Exec(`
-        INSERT INTO users (username, email, password, userrole, status, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-    `, username, email, string(hashedPassword), "user", 1)
+        INSERT INTO users (username, email, password, role, is_active, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+    `, username, email, string(hashedPassword), "user", true)
     
     if err != nil {
         data := AuthData{
@@ -249,10 +242,8 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) SignOut(w http.ResponseWriter, r *http.Request) {
     cookie, err := r.Cookie("session_id")
     if err == nil {
-        // Delete session from database
         h.db.Exec("DELETE FROM sessions WHERE id = $1", cookie.Value)
         
-        // Clear cookie
         http.SetCookie(w, &http.Cookie{
             Name:     "session_id",
             Value:    "",
@@ -271,7 +262,7 @@ func (h *AuthHandler) GetUserFromSession(r *http.Request) (*User, error) {
         return nil, err
     }
     
-    var userID int64
+    var userID string
     var expiresAt time.Time
     
     err = h.db.QueryRow(`
@@ -285,35 +276,38 @@ func (h *AuthHandler) GetUserFromSession(r *http.Request) (*User, error) {
     }
     
     var user User
-    var fullUserName, companyName, companyRole, phone sql.NullString
+    var firstName, lastName, phone sql.NullString
+    var isActive bool
     
     err = h.db.QueryRow(`
-        SELECT id, username, email, userrole, status, 
-               fullusername, companyname, companyrole, phone
+        SELECT id, username, email, role, is_active, 
+               first_name, last_name, phone
         FROM users 
-        WHERE id = $1 AND status = 1
+        WHERE id = $1
     `, userID).Scan(
         &user.ID, &user.Username, &user.Email, &user.UserRole, 
-        &user.Status, &fullUserName, &companyName, &companyRole, &phone,
+        &isActive, &firstName, &lastName, &phone,
     )
     
     if err != nil {
         return nil, err
     }
     
-    // Handle nullable fields
-    if fullUserName.Valid {
-        user.FullUserName = fullUserName.String
+    if !isActive {
+        return nil, sql.ErrNoRows
     }
-    if companyName.Valid {
-        user.CompanyName = companyName.String
-    }
-    if companyRole.Valid {
-        user.CompanyRole = companyRole.String
+    
+    if firstName.Valid {
+        user.FullUserName = firstName.String
+        if lastName.Valid {
+            user.FullUserName += " " + lastName.String
+        }
     }
     if phone.Valid {
         user.Phone = phone.String
     }
+    
+    user.Status = 1
     
     return &user, nil
 }
@@ -329,9 +323,8 @@ func (h *AuthHandler) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
     }
 }
 
-// User struct for authentication
 type User struct {
-    ID           int64
+    ID           string
     Username     string
     Email        string
     UserRole     string

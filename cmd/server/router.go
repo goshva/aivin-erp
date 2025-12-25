@@ -38,7 +38,6 @@ func setupRoutes(db *sql.DB) http.Handler {
 		}
 	}
 
-	// Routes
 	mux.HandleFunc("/auth/signin", auth.SignIn)
 	mux.HandleFunc("/auth/signup", auth.SignUp)
 	mux.HandleFunc("/auth/signout", auth.SignOut)

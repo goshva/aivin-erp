@@ -43,6 +43,22 @@ func (tr *TemplateRenderer) addCustomFuncs() {
 		"subtract": func(a, b int) int {
 			return a - b
 		},
+		"shortenID": func(id string) string {
+			if len(id) > 8 {
+				return id[:8] + "..."
+			}
+			return id
+		},
+		"formatFeatures": func(features map[string]bool) string {
+			var result []string
+			for feature, enabled := range features {
+				if enabled {
+					result = append(result, feature)
+				}
+			}
+			return strings.Join(result, ", ")
+		},
+		"split": strings.Split,
 	}
 }
 
@@ -160,7 +176,7 @@ func (tr *TemplateRenderer) loadTemplates() {
 
 		formTmpl := template.New("").Funcs(tr.funcMap)
 		formTmpl = template.Must(formTmpl.ParseFiles(formPath))
-		
+
 		name := filepath.Base(formPath)
 		tr.templates[name] = formTmpl
 		fmt.Printf("DEBUG: Loaded form separately: %s\n", name)
@@ -183,7 +199,7 @@ func (tr *TemplateRenderer) loadTemplates() {
 
 		partialTmpl := template.New("").Funcs(tr.funcMap)
 		partialTmpl = template.Must(partialTmpl.ParseFiles(partialPath))
-		
+
 		name := filepath.Base(partialPath)
 		tr.templates[name] = partialTmpl
 		fmt.Printf("DEBUG: Loaded partial separately: %s\n", name)
@@ -206,7 +222,7 @@ func (tr *TemplateRenderer) Render(w http.ResponseWriter, name string, data inte
 			nameWithExt := name + ".html"
 			tmpl, exists = tr.templates[nameWithExt]
 		}
-		
+
 		if !exists {
 			fmt.Printf("ERROR: Template %s not found in registry\n", name)
 			fmt.Printf("DEBUG: Available templates:\n")
@@ -225,7 +241,7 @@ func (tr *TemplateRenderer) Render(w http.ResponseWriter, name string, data inte
 
 	// Определяем, какой шаблон выполнять
 	tmplName := name
-	
+
 	// Для основных страниц используем имя страницы
 	if strings.HasSuffix(name, "_page.html") || name == "auth.html" || name == "dashboard_page.html" {
 		// Оставляем как есть

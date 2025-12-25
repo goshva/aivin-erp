@@ -6,23 +6,24 @@
 -- +goose Up
 BEGIN;
 
--- =============================================
--- USERS (20 users)
--- =============================================
--- migration: 202512231030_seed_test_users.sql
--- +goose Up
-
--- Вставляем тестовых пользователей с фиксированными UUID для удобства тестирования
+-- Вставляем тестовых пользователей с ПРАВИЛЬНЫМИ ролями
 INSERT INTO users (id, telegram_id, email, first_name, last_name, username, phone, role, avatar_url, is_active, last_active_at, created_at, updated_at, password) 
 VALUES 
     -- Системные пользователи с паролями для логина
-    ('11111111-1111-1111-1111-111111111120', 200000005, 'admin@aivin.com', 'Админ', 'Системный', 'admin', '+79160000000', 'admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin', true, NOW() - INTERVAL '10 days', NOW() - INTERVAL '10 days', NOW() - INTERVAL '10 days', '$2y$12$1b6PV2G0iUgrrjw9S642QOJxoHamlLr3hN4ww90co/OSUlwmiUcuu'),
-    ('11111111-1111-1111-1111-111111111121', 100000001, 'monitor@testsystem.ru', 'Монитор', 'Пользователь', 'monitor', '+7-999-000-00-01', 'monitor', 'https://api.dicebear.com/7.x/avataaars/svg?seed=monitor', true, NOW() - INTERVAL '9 days', NOW() - INTERVAL '9 days', NOW() - INTERVAL '9 days', '$2y$12$Dc7wN3TQlym69XcfYtsnkOXmH6wY0RWfLSDnpsZfMlEEkrT1OFSHW'),
-    ('11111111-1111-1111-1111-111111111122', 100000002, 'moderator@testsystem.ru', 'Модератор', 'Пользователь', 'moderator', '+7-999-000-00-02', 'moderator', 'https://api.dicebear.com/7.x/avataaars/svg?seed=moderator', true, NOW() - INTERVAL '8 days', NOW() - INTERVAL '8 days', NOW() - INTERVAL '8 days', '$2y$12$Vqmodk5UMpRqjG0HMbOi4e54R5UffACnh7gMU6obZHBO31uwOv59S'),
+    ('11111111-1111-1111-1111-111111111120', 200000005, 'admin@testsystem.ru', 'Админ', 'Системный', 'admin', '+79160000000', 'super_admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin', true, NOW() - INTERVAL '10 days', NOW() - INTERVAL '10 days', NOW() - INTERVAL '10 days', '$2y$12$1b6PV2G0iUgrrjw9S642QOJxoHamlLr3hN4ww90co/OSUlwmiUcuu'),
+    ('11111111-1111-1111-1111-111111111121', 100000001, 'monitor@testsystem.ru', 'Монитор', 'Пользователь', 'monitor', '+7-999-000-00-01', 'user', 'https://api.dicebear.com/7.x/avataaars/svg?seed=monitor', true, NOW() - INTERVAL '9 days', NOW() - INTERVAL '9 days', NOW() - INTERVAL '9 days', '$2y$12$Dc7wN3TQlym69XcfYtsnkOXmH6wY0RWfLSDnpsZfMlEEkrT1OFSHW'),
+    ('11111111-1111-1111-1111-111111111122', 100000002, 'restaurant_admin@testsystem.ru', 'Модератор', 'Пользователь', 'restaurant_admin', '+7-999-000-00-02', 'restaurant_admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=restaurant_admin', true, NOW() - INTERVAL '8 days', NOW() - INTERVAL '8 days', NOW() - INTERVAL '8 days', '$2y$12$Vqmodk5UMpRqjG0HMbOi4e54R5UffACnh7gMU6obZHBO31uwOv59S'),
 
     -- Regular users (15)
     ('11111111-1111-1111-1111-111111111101', 100000003, 'alexey.ivanov@example.com', 'Алексей', 'Иванов', 'alexey_ivanov', '+79161234567', 'user', 'https://api.dicebear.com/7.x/avataaars/svg?seed=alexey', true, NOW() - INTERVAL '30 days', NOW() - INTERVAL '30 days', NOW() - INTERVAL '30 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
-    ('11111111-1111-1111-1111-111111111102', 100000004, 'maria.petrova@example.com', 'Мария', 'Петрова', 'maria_petrova', '+79161234568', 'user', 'https://api.dicebear.com/7.x/avataaars/svg?seed=maria', true, NOW() - INTERVAL '29 days', NOW() - INTERVAL '29 days', NOW() - INTERVAL '29 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
+    
+    -- ... остальные пользователи с ролью 'user' ...
+    
+    -- Restaurant owners/admins (5) - исправляем на 'restaurant_admin'
+    ('11111111-1111-1111-1111-111111111116', 200000001, 'owner.turandot@example.com', 'Михаил', 'Романов', 'mikhail_romanov', '+79161234582', 'restaurant_admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=mikhail', true, NOW() - INTERVAL '15 days', NOW() - INTERVAL '15 days', NOW() - INTERVAL '15 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
+    ('11111111-1111-1111-1111-111111111117', 200000002, 'owner.cafepushkin@example.com', 'Антон', 'Лебедев', 'anton_lebedev', '+79161234583', 'restaurant_admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=anton', true, NOW() - INTERVAL '14 days', NOW() - INTERVAL '14 days', NOW() - INTERVAL '14 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
+    ('11111111-1111-1111-1111-111111111118', 200000003, 'owner.bernardazzi@example.com', 'Денис', 'Семенов', 'denis_semenov', '+79161234584', 'restaurant_admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=denis', true, NOW() - INTERVAL '13 days', NOW() - INTERVAL '13 days', NOW() - INTERVAL '13 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
+    ('11111111-1111-1111-1111-111111111119', 200000004, 'owner.white rabbit@example.com', 'Олег', 'Егоров', 'oleg_egorov', '+79161234585', 'restaurant_admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=oleg', true, NOW() - INTERVAL '12 days', NOW() - INTERVAL '12 days', NOW() - INTERVAL '12 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
     ('11111111-1111-1111-1111-111111111103', 100000005, 'dmitry.sidorov@example.com', 'Дмитрий', 'Сидоров', 'dmitry_sidorov', '+79161234569', 'user', 'https://api.dicebear.com/7.x/avataaars/svg?seed=dmitry', true, NOW() - INTERVAL '28 days', NOW() - INTERVAL '28 days', NOW() - INTERVAL '28 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
     ('11111111-1111-1111-1111-111111111104', 100000006, 'anna.smirnova@example.com', 'Анна', 'Смирнова', 'anna_smirnova', '+79161234570', 'user', 'https://api.dicebear.com/7.x/avataaars/svg?seed=anna', true, NOW() - INTERVAL '27 days', NOW() - INTERVAL '27 days', NOW() - INTERVAL '27 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
     ('11111111-1111-1111-1111-111111111105', 100000007, 'sergey.kuznetsov@example.com', 'Сергей', 'Кузнецов', 'sergey_kuznetsov', '+79161234571', 'user', 'https://api.dicebear.com/7.x/avataaars/svg?seed=sergey', true, NOW() - INTERVAL '26 days', NOW() - INTERVAL '26 days', NOW() - INTERVAL '26 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
@@ -38,10 +39,10 @@ VALUES
     ('11111111-1111-1111-1111-111111111115', 100000017, 'roman.kirillov@example.com', 'Роман', 'Кириллов', 'roman_kirillov', '+79161234581', 'user', 'https://api.dicebear.com/7.x/avataaars/svg?seed=roman', true, NOW() - INTERVAL '16 days', NOW() - INTERVAL '16 days', NOW() - INTERVAL '16 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
 
     -- Restaurant owners/admins (5)
-    ('11111111-1111-1111-1111-111111111116', 200000001, 'owner.turandot@example.com', 'Михаил', 'Романов', 'mikhail_romanov', '+79161234582', 'moderator', 'https://api.dicebear.com/7.x/avataaars/svg?seed=mikhail', true, NOW() - INTERVAL '15 days', NOW() - INTERVAL '15 days', NOW() - INTERVAL '15 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
-    ('11111111-1111-1111-1111-111111111117', 200000002, 'owner.cafepushkin@example.com', 'Антон', 'Лебедев', 'anton_lebedev', '+79161234583', 'moderator', 'https://api.dicebear.com/7.x/avataaars/svg?seed=anton', true, NOW() - INTERVAL '14 days', NOW() - INTERVAL '14 days', NOW() - INTERVAL '14 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
-    ('11111111-1111-1111-1111-111111111118', 200000003, 'owner.bernardazzi@example.com', 'Денис', 'Семенов', 'denis_semenov', '+79161234584', 'moderator', 'https://api.dicebear.com/7.x/avataaars/svg?seed=denis', true, NOW() - INTERVAL '13 days', NOW() - INTERVAL '13 days', NOW() - INTERVAL '13 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
-    ('11111111-1111-1111-1111-111111111119', 200000004, 'owner.white rabbit@example.com', 'Олег', 'Егоров', 'oleg_egorov', '+79161234585', 'moderator', 'https://api.dicebear.com/7.x/avataaars/svg?seed=oleg', true, NOW() - INTERVAL '12 days', NOW() - INTERVAL '12 days', NOW() - INTERVAL '12 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq')
+    ('11111111-1111-1111-1111-111111111116', 200000001, 'owner.turandot@example.com', 'Михаил', 'Романов', 'mikhail_romanov', '+79161234582', 'restaurant_admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=mikhail', true, NOW() - INTERVAL '15 days', NOW() - INTERVAL '15 days', NOW() - INTERVAL '15 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
+    ('11111111-1111-1111-1111-111111111117', 200000002, 'owner.cafepushkin@example.com', 'Антон', 'Лебедев', 'anton_lebedev', '+79161234583', 'restaurant_admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=anton', true, NOW() - INTERVAL '14 days', NOW() - INTERVAL '14 days', NOW() - INTERVAL '14 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
+    ('11111111-1111-1111-1111-111111111118', 200000003, 'owner.bernardazzi@example.com', 'Денис', 'Семенов', 'denis_semenov', '+79161234584', 'restaurant_admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=denis', true, NOW() - INTERVAL '13 days', NOW() - INTERVAL '13 days', NOW() - INTERVAL '13 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq'),
+    ('11111111-1111-1111-1111-111111111119', 200000004, 'owner.white rabbit@example.com', 'Олег', 'Егоров', 'oleg_egorov', '+79161234585', 'restaurant_admin', 'https://api.dicebear.com/7.x/avataaars/svg?seed=oleg', true, NOW() - INTERVAL '12 days', NOW() - INTERVAL '12 days', NOW() - INTERVAL '12 days', '$2y$10$N9qo8uLOickgx2ZMRZoMyeWU7i2JpP6YwXaM1oBQH3J1LvQfKj5Wq')
     
 ON CONFLICT (id) DO NOTHING;
 
@@ -118,8 +119,8 @@ ON CONFLICT (id) DO NOTHING;
 -- CAMPAIGNS
 -- =============================================
 INSERT INTO campaigns (id, restaurant_id, name, description, discount_type, discount_value, min_order_amount, status, starts_at, ends_at, usage_limit, usage_count) VALUES
-('66666666-6666-6666-6666-666666666601', '22222222-2222-2222-2222-222222222201', 'Скидка 20% на всё меню', 'Специальное предложение для новых гостей', 'percentage', 20.00, 2000.00, 'active', NOW() - INTERVAL '2 days', NOW() + INTERVAL '30 days', 100, 25),
-('66666666-6666-6666-6666-666666666602', '22222222-2222-2222-2222-222222222202', 'Бесплатный десерт', 'При заказе от 3000 руб. получайте десерт в подарок', 'fixed_amount', 750.00, 3000.00, 'active', NOW() - INTERVAL '5 days', NOW() + INTERVAL '15 days', 50, 12),
+('66666666-6666-6666-6666-666666666601', '22222222-2222-2222-2222-222222222205', 'Скидка 20% на всё меню', 'Специальное предложение для новых гостей', 'percentage', 20.00, 2000.00, 'active', NOW() - INTERVAL '2 days', NOW() + INTERVAL '30 days', 100, 25),
+('66666666-6666-6666-6666-666666666602', '22222222-2222-2222-2222-222222222206', 'Бесплатный десерт', 'При заказе от 3000 руб. получайте десерт в подарок', 'fixed_amount', 750.00, 3000.00, 'active', NOW() - INTERVAL '5 days', NOW() + INTERVAL '15 days', 50, 12),
 ('66666666-6666-6666-6666-666666666603', '22222222-2222-2222-2222-222222222207', 'Романтический ужин на двоих', 'Специальное меню для пар', 'percentage', 25.00, 5000.00, 'active', NOW() - INTERVAL '1 days', NOW() + INTERVAL '60 days', 30, 8)
 ON CONFLICT (id) DO NOTHING;
 
@@ -135,69 +136,69 @@ ON CONFLICT (id) DO NOTHING;
 -- =============================================
 -- TRANSACTIONS
 -- =============================================
-INSERT INTO transactions (id, user_id, restaurant_id, campaign_id, amount, discount_amount, final_amount, status, payment_method, confirmed_at) VALUES
-('88888888-8888-8888-8888-888888888801', '11111111-1111-1111-1111-111111111101', '22222222-2222-2222-2222-222222222201', '66666666-6666-6666-6666-666666666601', 4500.00, 900.00, 3600.00, 'confirmed', 'card', NOW() - INTERVAL '3 days'),
-('88888888-8888-8888-8888-888888888802', '11111111-1111-1111-1111-111111111102', '22222222-2222-2222-2222-222222222202', '66666666-6666-6666-6666-666666666602', 3200.00, 750.00, 2450.00, 'confirmed', 'card', NOW() - INTERVAL '2 days'),
-('88888888-8888-8888-8888-888888888803', '11111111-1111-1111-1111-111111111103', '22222222-2222-2222-2222-222222222207', '66666666-6666-6666-6666-666666666603', 6000.00, 1500.00, 4500.00, 'confirmed', 'card', NOW() - INTERVAL '1 days')
-ON CONFLICT (id) DO NOTHING;
+-- INSERT INTO transactions (id, user_id, restaurant_id, campaign_id, amount, discount_amount, final_amount, status, payment_method, confirmed_at) VALUES
+-- ('88888888-8888-8888-8888-888888888801', '11111111-1111-1111-1111-111111111101', '22222222-2222-2222-2222-222222222207', '66666666-6666-6666-6666-666666666601', 4500.00, 900.00, 3600.00, 'confirmed', 'card', NOW() - INTERVAL '3 days'),
+-- ('88888888-8888-8888-8888-888888888802', '11111111-1111-1111-1111-111111111102', '22222222-2222-2222-2222-222222222206', '66666666-6666-6666-6666-666666666602', 3200.00, 750.00, 2450.00, 'confirmed', 'card', NOW() - INTERVAL '2 days'),
+-- ('88888888-8888-8888-8888-888888888803', '11111111-1111-1111-1111-111111111103', '22222222-2222-2222-2222-222222222205', '66666666-6666-6666-6666-666666666603', 6000.00, 1500.00, 4500.00, 'confirmed', 'card', NOW() - INTERVAL '1 days')
+-- ON CONFLICT (id) DO NOTHING;
 
 -- =============================================
 -- REVIEWS
 -- =============================================
-INSERT INTO reviews (id, user_id, restaurant_id, transaction_id, rating, comment, is_verified) VALUES
-('99999999-9999-9999-9999-999999999901', '11111111-1111-1111-1111-111111111101', '22222222-2222-2222-2222-222222222201', '88888888-8888-8888-8888-888888888801', 5, 'Отличный ресторан! Обслуживание на высшем уровне, еда просто восхитительная. Обязательно вернусь.', true),
-('99999999-9999-9999-9999-999999999902', '11111111-1111-1111-1111-111111111102', '22222222-2222-2222-2222-222222222202', '88888888-8888-8888-8888-888888888802', 4, 'Очень атмосферное место. Кухня хорошая, но немного дороговато. Персонал вежливый.', true),
-('99999999-9999-9999-9999-999999999903', '11111111-1111-1111-1111-111111111103', '22222222-2222-2222-2222-222222222207', '88888888-8888-8888-8888-888888888803', 5, 'Невероятный вид на Москву! Идеальное место для особого случая. Еда и сервис на пять с плюсом.', true)
-ON CONFLICT (id) DO NOTHING;
+-- INSERT INTO reviews (id, user_id, restaurant_id, transaction_id, rating, comment, is_verified) VALUES
+--('99999999-9999-9999-9999-999999999901', '11111111-1111-1111-1111-111111111115', '22222222-2222-2222-2222-222222222201', '88888888-8888-8888-8888-888888888801', 5, 'Отличный ресторан! Обслуживание на высшем уровне, еда просто восхитительная. Обязательно вернусь.', true),
+-- ('99999999-9999-9999-9999-999999999902', '11111111-1111-1111-1111-111111111115', '22222222-2222-2222-2222-222222222202', '88888888-8888-8888-8888-888888888802', 4, 'Очень атмосферное место. Кухня хорошая, но немного дороговато. Персонал вежливый.', true),
+-- ('99999999-9999-9999-9999-999999999903', '11111111-1111-1111-1111-111111111114', '22222222-2222-2222-2222-222222222207', '88888888-8888-8888-8888-888888888803', 5, 'Невероятный вид на Москву! Идеальное место для особого случая. Еда и сервис на пять с плюсом.', true)
+-- ON CONFLICT (id) DO NOTHING;
 
 -- =============================================
 -- USER ACTIONS (sample data)
 -- =============================================
-INSERT INTO user_actions (id, user_id, restaurant_id, action_type, created_at) VALUES
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1', '11111111-1111-1111-1111-111111111101', '22222222-2222-2222-2222-222222222201', 'view', NOW() - INTERVAL '4 hours'),
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2', '11111111-1111-1111-1111-111111111101', '22222222-2222-2222-2222-222222222201', 'swipe_right', NOW() - INTERVAL '3 hours'),
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3', '11111111-1111-1111-1111-111111111102', '22222222-2222-2222-2222-222222222202', 'view', NOW() - INTERVAL '5 hours'),
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4', '11111111-1111-1111-1111-111111111102', '22222222-2222-2222-2222-222222222202', 'favorite', NOW() - INTERVAL '4 hours')
-ON CONFLICT (id) DO NOTHING;
+-- INSERT INTO user_actions (id, user_id, restaurant_id, action_type, created_at) VALUES
+-- ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1', '11111111-1111-1111-1111-111111111101', '22222222-2222-2222-2222-222222222201', 'view', NOW() - INTERVAL '4 hours'),
+-- ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2', '11111111-1111-1111-1111-111111111101', '22222222-2222-2222-2222-222222222201', 'swipe_right', NOW() - INTERVAL '3 hours'),
+-- ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3', '11111111-1111-1111-1111-111111111102', '22222222-2222-2222-2222-222222222202', 'view', NOW() - INTERVAL '5 hours'),
+-- ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4', '11111111-1111-1111-1111-111111111102', '22222222-2222-2222-2222-222222222202', 'favorite', NOW() - INTERVAL '4 hours')
+-- ON CONFLICT (id) DO NOTHING;
 
 -- =============================================
 -- USER FAVORITES
 -- =============================================
-INSERT INTO user_favorites (id, user_id, restaurant_id) VALUES
-('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1', '11111111-1111-1111-1111-111111111101', '22222222-2222-2222-2222-222222222201'),
-('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb2', '11111111-1111-1111-1111-111111111102', '22222222-2222-2222-2222-222222222202'),
-('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb3', '11111111-1111-1111-1111-111111111103', '22222222-2222-2222-2222-222222222207')
-ON CONFLICT (id) DO NOTHING;
+-- INSERT INTO user_favorites (id, user_id, restaurant_id) VALUES
+-- ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1', '11111111-1111-1111-1111-111111111101', '22222222-2222-2222-2222-222222222201'),
+-- ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb2', '11111111-1111-1111-1111-111111111102', '22222222-2222-2222-2222-222222222202'),
+-- ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb3', '11111111-1111-1111-1111-111111111103', '22222222-2222-2222-2222-222222222207')
+-- ON CONFLICT (id) DO NOTHING;
 
 -- =============================================
 -- ANALYTICS DAILY (last 7 days for first restaurant)
 -- =============================================
-INSERT INTO analytics_daily (id, restaurant_id, date, views, swipes_left, swipes_right, clicks, bookings, revenue) VALUES
-('cccccccc-cccc-cccc-cccc-ccccccccccc1', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '7 days', 45, 10, 25, 15, 3, 12000.00),
-('cccccccc-cccc-cccc-cccc-ccccccccccc2', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '6 days', 52, 12, 28, 18, 4, 15000.00),
-('cccccccc-cccc-cccc-cccc-ccccccccccc3', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '5 days', 48, 8, 30, 20, 5, 18000.00),
-('cccccccc-cccc-cccc-cccc-ccccccccccc4', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '4 days', 60, 15, 35, 25, 6, 21000.00),
-('cccccccc-cccc-cccc-cccc-ccccccccccc5', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '3 days', 55, 10, 32, 22, 4, 16000.00),
-('cccccccc-cccc-cccc-cccc-ccccccccccc6', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '2 days', 65, 18, 38, 30, 7, 24000.00),
-('cccccccc-cccc-cccc-cccc-ccccccccccc7', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '1 days', 70, 20, 40, 35, 8, 27000.00)
-ON CONFLICT (id) DO NOTHING;
+-- INSERT INTO analytics_daily (id, restaurant_id, date, views, swipes_left, swipes_right, clicks, bookings, revenue) VALUES
+-- ('cccccccc-cccc-cccc-cccc-ccccccccccc1', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '7 days', 45, 10, 25, 15, 3, 12000.00),
+-- ('cccccccc-cccc-cccc-cccc-ccccccccccc2', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '6 days', 52, 12, 28, 18, 4, 15000.00),
+-- ('cccccccc-cccc-cccc-cccc-ccccccccccc3', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '5 days', 48, 8, 30, 20, 5, 18000.00),
+-- ('cccccccc-cccc-cccc-cccc-ccccccccccc4', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '4 days', 60, 15, 35, 25, 6, 21000.00),
+-- ('cccccccc-cccc-cccc-cccc-ccccccccccc5', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '3 days', 55, 10, 32, 22, 4, 16000.00),
+-- ('cccccccc-cccc-cccc-cccc-ccccccccccc6', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '2 days', 65, 18, 38, 30, 7, 24000.00),
+-- ('cccccccc-cccc-cccc-cccc-ccccccccccc7', '22222222-2222-2222-2222-222222222201', CURRENT_DATE - INTERVAL '1 days', 70, 20, 40, 35, 8, 27000.00)
+-- ON CONFLICT (id) DO NOTHING;
 
 -- =============================================
 -- NOTIFICATIONS
 -- =============================================
-INSERT INTO notifications (id, user_id, title, message, type, is_read) VALUES
-('dddddddd-dddd-dddd-dddd-ddddddddddd1', '11111111-1111-1111-1111-111111111101', 'Ваш заказ подтверждён', 'Заказ №88888888-8888-8888-8888-888888888801 успешно оплачен', 'success', true),
-('dddddddd-dddd-dddd-dddd-ddddddddddd2', '11111111-1111-1111-1111-111111111101', 'Новая акция', 'В ресторане Turandot действует скидка 20% на всё меню', 'promo', false),
-('dddddddd-dddd-dddd-dddd-ddddddddddd3', '11111111-1111-1111-1111-111111111102', 'Спасибо за отзыв', 'Ваш отзыв о ресторане Café Pushkin был опубликован', 'info', true)
-ON CONFLICT (id) DO NOTHING;
+-- INSERT INTO notifications (id, user_id, title, message, type, is_read) VALUES
+-- ('dddddddd-dddd-dddd-dddd-ddddddddddd1', '11111111-1111-1111-1111-111111111101', 'Ваш заказ подтверждён', 'Заказ №88888888-8888-8888-8888-888888888801 успешно оплачен', 'success', true),
+-- ('dddddddd-dddd-dddd-dddd-ddddddddddd2', '11111111-1111-1111-1111-111111111101', 'Новая акция', 'В ресторане Turandot действует скидка 20% на всё меню', 'promo', false),
+-- ('dddddddd-dddd-dddd-dddd-ddddddddddd3', '11111111-1111-1111-1111-111111111102', 'Спасибо за отзыв', 'Ваш отзыв о ресторане Café Pushkin был опубликован', 'info', true)
+-- ON CONFLICT (id) DO NOTHING;
 
 -- =============================================
 -- REFERRALS
 -- =============================================
-INSERT INTO referrals (id, referrer_id, referee_id, referral_code, reward_amount, is_rewarded) VALUES
-('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeee1', '11111111-1111-1111-1111-111111111101', '11111111-1111-1111-1111-111111111104', 'REFALEX', 500.00, true),
-('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeee2', '11111111-1111-1111-1111-111111111102', '11111111-1111-1111-1111-111111111105', 'REFMARIA', 500.00, false)
-ON CONFLICT (id) DO NOTHING;
+-- INSERT INTO referrals (id, referrer_id, referee_id, referral_code, reward_amount, is_rewarded) VALUES
+-- ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeee1', '11111111-1111-1111-1111-111111111101', '11111111-1111-1111-1111-111111111104', 'REFALEX', 500.00, true),
+-- ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeee2', '11111111-1111-1111-1111-111111111102', '11111111-1111-1111-1111-111111111105', 'REFMARIA', 500.00, false)
+-- ON CONFLICT (id) DO NOTHING;
 
 COMMIT;
 
@@ -212,6 +213,8 @@ COMMIT;
 -- - 3 transactions with reviews
 -- - 7 days of analytics
 -- - And supporting records
+
+
 -- +goose Down
 -- Удаляем всех тестовых пользователей
 DELETE FROM users WHERE id IN (

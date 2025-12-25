@@ -35,7 +35,7 @@ vend_erp/
 ## Технологии
 
 - **Backend**: Go 1.21+
-- **PGSQL** : 17
+- **PGSQ(GIS))** : 17
 - **Frontend**: HTMX, Hyperscript
 - **Database**: PostgreSQL
 - **Templates**: Go HTML templates
@@ -53,3 +53,7 @@ vend_erp/
 `CREATE USER venderp WITH PASSWORD 'password';`
 `CREATE DATABASE venderp OWNER venderp;`
 `\q`
+# SEED
+`dsn := "postgresql://postgres:postgres@localhost:5432/aivin?sslmode=disable"`
+goose -dir migrations postgres "postgresql://postgres:postgres@localhost:5432/aivin?sslmode=disable" up
+go  run cmd/server/router.go  cmd/server/main.go 

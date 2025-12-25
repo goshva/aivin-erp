@@ -1,34 +1,59 @@
 {{ define "locations_list.html" }}
 <div class="table-container">
-
 <table class="table">
     <thead>
         <tr>
             <th>ID</th>
             <th>Название</th>
             <th>Адрес</th>
-            <th>Контактное лицо</th>
             <th>Телефон</th>
-            <th>Аренда (₽)</th>
-            <th>День оплаты</th>
+            <th>Рейтинг</th>
+            <th>Ценовой диапазон</th>
             <th>Статус</th>
+            <th>Особенности</th>
             <th>Действия</th>
         </tr>
     </thead>
     <tbody>
         {{range .Locations}}
         <tr>
-            <td>{{.ID}}</td>
-            <td>{{.Name}}</td>
-            <td>{{.Address}}</td>
-            <td>{{.ContactPerson}}</td>
-            <td>{{.ContactPhone}}</td>
-            <td>{{printf "%.2f" .MonthlyRent}} ₽</td>
-            <td>{{.RentDueDay}}</td>
+            <td>{{.ID | shortenID}}</td>
             <td>
-                <span class="status-badge {{if .IsActive}}status-active{{else}}status-inactive{{end}}">
-                    {{if .IsActive}}Активна{{else}}Неактивна{{end}}
+                <strong>{{.Name}}</strong><br>
+                <small class="text-muted">{{.Email}}</small>
+            </td>
+            <td>{{.Address}}</td>
+            <td>{{.Phone}}</td>
+            <td>
+                <span class="rating">
+                    {{.Rating}} ★ ({{.ReviewCount}} отзывов)
                 </span>
+            </td>
+            <td>
+                {{if eq .PriceRange 1}}₽{{end}}
+                {{if eq .PriceRange 2}}₽₽{{end}}
+                {{if eq .PriceRange 3}}₽₽₽{{end}}
+                {{if eq .PriceRange 4}}₽₽₽₽{{end}}
+            </td>
+            <td>
+                <span class="status-badge status-{{.Status}}">
+                    {{if eq .Status "pending"}}На рассмотрении{{end}}
+                    {{if eq .Status "verified"}}Подтверждён{{end}}
+                    {{if eq .Status "suspended"}}Приостановлен{{end}}
+                    {{if eq .Status "rejected"}}Отклонён{{end}}
+                </span>
+            </td>
+            <td>
+                {{$features := formatFeatures .Features}}
+                {{if $features}}
+                    <div class="features">
+                        {{range split $features ", "}}
+                        <span class="feature-tag">{{.}}</span>
+                        {{end}}
+                    </div>
+                {{else}}
+                    -
+                {{end}}
             </td>
             <td>
                 <div style="display: flex; gap: 0.5rem;">
@@ -41,7 +66,7 @@
                     <button class="btn btn-danger"
                             hx-delete="/locations/delete?id={{.ID}}"
                             hx-target="#locations-table"
-                            hx-confirm="Удалить локацию?">
+                            hx-confirm="Удалить ресторан?">
                         🗑️
                     </button>
                 </div>
@@ -50,12 +75,12 @@
         {{else}}
         <tr>
             <td colspan="9" style="text-align: center; padding: 2rem; color: var(--secondary);">
-                Нет локаций. 
+                Нет ресторанов. 
                 <button class="btn btn-primary"
                         hx-get="/locations/form"
                         hx-target="#modal-body"
                         onclick="VendERP.showModal()">
-                    ➕ Добавить первую локацию
+                    ➕ Добавить первый ресторан
                 </button>
             </td>
         </tr>
